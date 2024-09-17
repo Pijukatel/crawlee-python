@@ -119,6 +119,6 @@ async def disabled_proxy(proxy_info: ProxyInfo) -> AsyncGenerator[ProxyInfo, Non
 
 
 @pytest.fixture
-def text_with_symbols():
+def text_with_symbols() -> str:
     """Not possible to encode with cp1252. Possible to encode with utf-8."""
     return 'Reliable crawling 🏗️. Try Crawlee out 👾. Deploy to the cloud ☁️'

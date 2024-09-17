@@ -64,6 +64,10 @@ class _CurlImpersonateResponse:
     def headers(self) -> dict[str, str]:
         return dict(self._response.headers.items())
 
+    @property
+    def encoding(self) -> str:
+        return self._response.encoding
+
     def read(self) -> bytes:
         return self._response.content
 

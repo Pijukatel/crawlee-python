@@ -800,7 +800,7 @@ class BasicCrawler(Generic[TCrawlingContext]):
             proxy_info=proxy_info,
             send_request=self._prepare_send_request_function(session, proxy_info),
             add_requests=result.add_requests,
-            push_data_callback=self._push_data,
+            push_data=self._push_data,
             log=self._logger,
         )
 

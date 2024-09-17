@@ -80,7 +80,7 @@ class BeautifulSoupCrawler(BasicCrawler[BeautifulSoupCrawlingContext]):
             proxy_info=context.proxy_info,
             add_requests=context.add_requests,
             send_request=context.send_request,
-            push_data_callback=context.push_data,
+            push_data=context.push_data,
             log=context.log,
             http_response=result.http_response,
         )
@@ -162,7 +162,7 @@ class BeautifulSoupCrawler(BasicCrawler[BeautifulSoupCrawlingContext]):
             enqueue_links=enqueue_links,
             add_requests=context.add_requests,
             send_request=context.send_request,
-            push_data_callback=context.push_data,
+            push_data=context.push_data,
             log=context.log,
             http_response=context.http_response,
             soup=soup,

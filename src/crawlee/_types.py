@@ -140,7 +140,6 @@ class PushDataFunction(Protocol):
         data: JsonSerializable,
         dataset_id: str | None = None,
         dataset_name: str | None = None,
-        dataset_encoding: str | None = None,
         **kwargs: Unpack[PushDataKwargs],
     ) -> Coroutine[None, None, None]: ...
 
@@ -201,11 +200,8 @@ class BasicCrawlingContext:
     proxy_info: ProxyInfo | None
     send_request: SendRequestFunction
     add_requests: AddRequestsFunction
-    push_data_callback: PushDataFunction
+    push_data: PushDataFunction
     log: logging.Logger
-
-    def push_data(self, *args, **kwargs):
-        return self.push_data_callback(*args, **kwargs)
 
 
 @dataclass()

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import asyncio
 import json
-import locale
 import os
 import shutil
 from datetime import datetime, timezone
+from locale import getpreferredencoding
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, AsyncContextManager, AsyncIterator
 
@@ -357,9 +357,9 @@ class DatasetClient(BaseDatasetClient):
 
             # Extract automatic data
             if 'response_metadata' in item:
-                encoding = item.pop('response_metadata').get('encoding', locale.getencoding())
+                encoding = item.pop('response_metadata').get('encoding', getpreferredencoding())
             else:
-                encoding = locale.getencoding()
+                encoding = getpreferredencoding()
 
             f = await asyncio.to_thread(open, file_path, mode='w', encoding=encoding)
             try:

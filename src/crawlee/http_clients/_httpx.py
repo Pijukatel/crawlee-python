@@ -34,7 +34,7 @@ class _HttpxResponse:
 
     @property
     def encoding(self) -> str:
-        return self._response.encoding
+        return self._response.encoding or ''
 
     @property
     def status_code(self) -> int:

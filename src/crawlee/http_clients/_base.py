@@ -29,6 +29,10 @@ class HttpResponse(Protocol):
         """The HTTP status code received from the server."""
 
     @property
+    def encoding(self) -> str:
+        """Content encoding."""
+
+    @property
     def headers(self) -> dict[str, str]:
         """The HTTP headers received in the response."""
 

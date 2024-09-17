@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, AsyncGenerator
+from typing import TYPE_CHECKING, AsyncGenerator, List
 from unittest import mock
 
 import pytest
@@ -178,16 +178,18 @@ async def test_handle_blocked_request(server: respx.MockRouter) -> None:
     assert stats.requests_failed == 1
 
 
-async def test_symbols_encoding(server: respx.MockRouter, text_with_symbols: str, request, tmp_path) -> None:
+async def test_symbols_encoding(server: respx.MockRouter, text_with_symbols: str) -> None:
     """Tests that encoding from response is passed both to BeautifulSoup and to file writer."""
 
     crawler = BeautifulSoupCrawler(request_provider=RequestList(['https://test.io/symbols']))
-    handler = mock.AsyncMock()
+
+    found_data: List[str] = []
 
     @crawler.router.default_handler
     async def request_handler(context: BeautifulSoupCrawlingContext) -> None:
-        title = context.soup.find('title').text
-        assert title == text_with_symbols
+        title = context.soup.title.text if context.soup.title else ''
+        found_data.append(title)
         await context.push_data({'title': title})
 
     await crawler.run()
+    assert text_with_symbols == found_data[0]

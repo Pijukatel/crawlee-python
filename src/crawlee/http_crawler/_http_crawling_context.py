@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from logging import getLogger
-from typing import Unpack, Coroutine
+from typing import Coroutine
+
+from typing_extensions import Unpack
 
 from crawlee._types import BasicCrawlingContext, JsonSerializable
 from crawlee.http_clients import HttpCrawlingResult
 from crawlee.storages._dataset import PushDataKwargs
-
 
 logger = getLogger(__name__)
 
@@ -29,16 +30,20 @@ class HttpCrawlingContext(BasicCrawlingContext, HttpCrawlingResult):
             return fallback_encoding
         return source_encoding
 
-    def push_data(
+    def __post_init__(self) -> None:
+        object.__setattr__(self, '_push_data', self.push_data)
+        object.__setattr__(self, 'push_data', self._push_data_wrapper)
+
+    def _push_data_wrapper(
         self,
         data: JsonSerializable,
         dataset_id: str | None = None,
         dataset_name: str | None = None,
-        dataset_encoding: str | None = None,
         **kwargs: Unpack[PushDataKwargs],
     ) -> Coroutine[None, None, None]:
         # Automatically enhance data from http response
         encoding = self.get_valid_encoding(self.http_response.encoding)
-        data['response_metadata'] = {**data.get('response_metadata', {}), **{'encoding': encoding}}
+        if isinstance(data, dict):
+            data['response_metadata'] = {'encoding': encoding}
 
-        return self.push_data_callback(data, dataset_id, dataset_name, dataset_encoding, **kwargs)
+        return self._push_data(data, dataset_id, dataset_name, **kwargs)
