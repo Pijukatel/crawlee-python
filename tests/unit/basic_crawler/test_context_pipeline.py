@@ -34,7 +34,7 @@ async def test_calls_consumer_without_middleware() -> None:
         add_requests=AsyncMock(),
         session=Session(),
         proxy_info=AsyncMock(),
-        push_data=AsyncMock(),
+        push_data_callback=AsyncMock(),
         log=logging.getLogger(),
     )
 
@@ -59,7 +59,7 @@ async def test_calls_consumers_and_middlewares() -> None:
             add_requests=AsyncMock(),
             session=context.session,
             proxy_info=AsyncMock(),
-            push_data=AsyncMock(),
+            push_data_callback=AsyncMock(),
             log=logging.getLogger(),
         )
         events.append('middleware_a_out')
@@ -74,7 +74,7 @@ async def test_calls_consumers_and_middlewares() -> None:
             add_requests=AsyncMock(),
             session=context.session,
             proxy_info=AsyncMock(),
-            push_data=AsyncMock(),
+            push_data_callback=AsyncMock(),
             log=logging.getLogger(),
         )
         events.append('middleware_b_out')
@@ -87,7 +87,7 @@ async def test_calls_consumers_and_middlewares() -> None:
         add_requests=AsyncMock(),
         session=Session(),
         proxy_info=AsyncMock(),
-        push_data=AsyncMock(),
+        push_data_callback=AsyncMock(),
         log=logging.getLogger(),
     )
     await pipeline(context, consumer)
@@ -111,7 +111,7 @@ async def test_wraps_consumer_errors() -> None:
         add_requests=AsyncMock(),
         session=Session(),
         proxy_info=AsyncMock(),
-        push_data=AsyncMock(),
+        push_data_callback=AsyncMock(),
         log=logging.getLogger(),
     )
 
@@ -138,7 +138,7 @@ async def test_handles_exceptions_in_middleware_initialization() -> None:
         add_requests=AsyncMock(),
         session=Session(),
         proxy_info=AsyncMock(),
-        push_data=AsyncMock(),
+        push_data_callback=AsyncMock(),
         log=logging.getLogger(),
     )
 
@@ -168,7 +168,7 @@ async def test_handles_exceptions_in_middleware_finalization() -> None:
         add_requests=AsyncMock(),
         session=Session(),
         proxy_info=AsyncMock(),
-        push_data=AsyncMock(),
+        push_data_callback=AsyncMock(),
         log=logging.getLogger(),
     )
 

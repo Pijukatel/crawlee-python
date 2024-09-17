@@ -33,6 +33,10 @@ class _HttpxResponse:
         return self._response.http_version
 
     @property
+    def encoding(self) -> str:
+        return self._response.encoding
+
+    @property
     def status_code(self) -> int:
         return self._response.status_code
 

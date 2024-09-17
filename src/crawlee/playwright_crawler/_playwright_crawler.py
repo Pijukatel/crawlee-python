@@ -161,7 +161,7 @@ class PlaywrightCrawler(BasicCrawler[PlaywrightCrawlingContext]):
                 session=context.session,
                 add_requests=context.add_requests,
                 send_request=context.send_request,
-                push_data=context.push_data,
+                push_data_callback=context.push_data,
                 proxy_info=context.proxy_info,
                 log=context.log,
                 page=crawlee_page.page,

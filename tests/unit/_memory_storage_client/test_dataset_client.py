@@ -74,6 +74,23 @@ async def test_update(dataset_client: DatasetClient) -> None:
         await dataset_client.update(name=new_dataset_name)
 
 
+async def test_write_to_file_uses_bad_encoding_from_metadata(
+    dataset_client: DatasetClient, text_with_symbols: str
+) -> None:
+    with pytest.raises(UnicodeEncodeError):
+        await dataset_client.push_items({'abc': text_with_symbols, 'response_metadata': {'encoding': 'cp1252'}})
+
+
+async def test_write_to_file_uses_good_encoding_from_metadata(
+    dataset_client: DatasetClient, text_with_symbols: str
+) -> None:
+    await dataset_client.push_items({'abc': text_with_symbols, 'response_metadata': {'encoding': 'utf-8'}})
+
+
+async def test_write_to_file_no_encoding_in_metadata_uses_fallback(dataset_client: DatasetClient) -> None:
+    await dataset_client.push_items({'abc': 'def'})
+
+
 async def test_delete(dataset_client: DatasetClient) -> None:
     await dataset_client.push_items({'abc': 123})
     dataset_info = await dataset_client.get()

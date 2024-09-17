@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import locale
 import os
 import shutil
 from datetime import datetime, timezone
@@ -42,6 +43,7 @@ class DatasetClient(BaseDatasetClient):
         memory_storage_client: MemoryStorageClient,
         id: str | None = None,
         name: str | None = None,
+        encoding: str | None = None,
         created_at: datetime | None = None,
         accessed_at: datetime | None = None,
         modified_at: datetime | None = None,
@@ -50,6 +52,7 @@ class DatasetClient(BaseDatasetClient):
         self._memory_storage_client = memory_storage_client
         self.id = id or crypto_random_object_id()
         self.name = name
+        self.encoding = encoding
         self._created_at = created_at or datetime.now(timezone.utc)
         self._accessed_at = accessed_at or datetime.now(timezone.utc)
         self._modified_at = modified_at or datetime.now(timezone.utc)
@@ -64,6 +67,7 @@ class DatasetClient(BaseDatasetClient):
         return DatasetMetadata(
             id=self.id,
             name=self.name,
+            encoding=self.encoding,
             accessed_at=self._accessed_at,
             created_at=self._created_at,
             modified_at=self._modified_at,
@@ -350,7 +354,14 @@ class DatasetClient(BaseDatasetClient):
         # Save all the new items to the disk
         for idx, item in data:
             file_path = os.path.join(entity_directory, f'{idx}.json')
-            f = await asyncio.to_thread(open, file_path, mode='w')
+
+            # Extract automatic data
+            if 'response_metadata' in item:
+                encoding = item.pop('response_metadata').get('encoding', locale.getencoding())
+            else:
+                encoding = locale.getencoding()
+
+            f = await asyncio.to_thread(open, file_path, mode='w', encoding=encoding)
             try:
                 s = await json_dumps(item)
                 await asyncio.to_thread(f.write, s)

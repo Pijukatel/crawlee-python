@@ -22,6 +22,7 @@ class _BaseStorageMetadata(BaseModel):
 
     id: Annotated[str, Field(alias='id')]
     name: Annotated[str | None, Field(alias='name', default='')]
+    #    encoding: Annotated[str | None, Field(alias='encoding', default='')]
     accessed_at: Annotated[datetime, Field(alias='accessedAt')]
     created_at: Annotated[datetime, Field(alias='createdAt')]
     modified_at: Annotated[datetime, Field(alias='modifiedAt')]

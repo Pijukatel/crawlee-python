@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-async def server() -> AsyncGenerator[respx.MockRouter, None]:
+async def server(text_with_symbols: str) -> AsyncGenerator[respx.MockRouter, None]:
     with respx.mock(base_url='https://test.io', assert_all_called=False) as mock:
         mock.get('/', name='index_endpoint').return_value = Response(
             200,
@@ -65,6 +65,17 @@ async def server() -> AsyncGenerator[respx.MockRouter, None]:
                 <body>
                     <iframe src=Test_Incapsula_Resource>
                     </iframe>
+                </body>
+            </html>""",
+        )
+
+        mock.get('/symbols', name='symbols').return_value = Response(
+            200,
+            text=f"""<html>
+                <head>
+                    <title>{text_with_symbols}</title>
+                </head>
+                <body>
                 </body>
             </html>""",
         )
@@ -165,3 +176,18 @@ async def test_handle_blocked_request(server: respx.MockRouter) -> None:
     stats = await crawler.run()
     assert server['incapsula_endpoint'].called
     assert stats.requests_failed == 1
+
+
+async def test_symbols_encoding(server: respx.MockRouter, text_with_symbols: str, request, tmp_path) -> None:
+    """Tests that encoding from response is passed both to BeautifulSoup and to file writer."""
+
+    crawler = BeautifulSoupCrawler(request_provider=RequestList(['https://test.io/symbols']))
+    handler = mock.AsyncMock()
+
+    @crawler.router.default_handler
+    async def request_handler(context: BeautifulSoupCrawlingContext) -> None:
+        title = context.soup.find('title').text
+        assert title == text_with_symbols
+        await context.push_data({'title': title})
+
+    await crawler.run()
