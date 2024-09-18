@@ -1,12 +1,15 @@
 import asyncio
 from datetime import timedelta
 
+from crawlee import service_container
 from crawlee.beautifulsoup_crawler import BeautifulSoupCrawler, BeautifulSoupCrawlingContext
 
 
 async def main() -> None:
     # Create an instance of the BeautifulSoupCrawler class, a crawler that automatically
     # loads the URLs and parses their HTML using the BeautifulSoup library.
+    configuration = service_container.get_configuration()
+    configuration.encodings = ('nonsense_encoding', 'cp1252', 'utf-8')
     crawler = BeautifulSoupCrawler(
         # On error, retry each page at most once.
         max_request_retries=1,

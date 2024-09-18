@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
+import os
 from typing import AsyncGenerator
 
 import pytest
 
+from crawlee import service_container
 from crawlee.storages import Dataset, KeyValueStore
 
 
@@ -128,3 +131,29 @@ async def test_iterate_items(dataset: Dataset) -> None:
         idx += 1
 
     assert idx == desired_item_count
+
+
+@pytest.mark.parametrize(
+    ('encodings', 'succeeded'),
+    [
+        (('nonsense_encoding',), False),
+        (('nonsense_encoding', 'cp1252'), False),
+        (('nonsense_encoding', 'cp1252', 'utf-8'), True),
+    ],
+)
+async def test_push_data_bad_encoding(dataset: Dataset, encodings: tuple[str, ...], succeeded: bool) -> None:
+    content = {'A': 'Reliable crawling 🏗️'}
+
+    # TODO: Better way of creating expected content. This exposes internals.
+    content_json = json.dumps(content, ensure_ascii=False, indent=2, default=str)
+
+    configuration = service_container.get_configuration()
+    configuration.encodings = encodings
+
+    await dataset.push_data([content])
+
+    # TODO: Better way of creating expected path. This exposes internals
+    expected_file = os.path.join(configuration.storage_dir, 'datasets', 'default', '000000001.json')
+    expected_content = content_json if succeeded else ''
+    with open(expected_file, encoding='utf-8') as f:
+        assert f.read() == expected_content
