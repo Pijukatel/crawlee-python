@@ -30,6 +30,8 @@ class Configuration(BaseSettings):
 
     verbose_log: Annotated[bool, Field(alias='crawlee_verbose_log')] = False
 
+    encodings: Annotated[tuple[str, ...], Field(alias='crawlee_encodings')] = ('utf-8',)
+
     default_browser_path: Annotated[
         str | None,
         Field(

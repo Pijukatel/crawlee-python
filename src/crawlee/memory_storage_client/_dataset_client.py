@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any, AsyncContextManager, AsyncIterator
 
 from typing_extensions import override
 
+from crawlee import service_container
 from crawlee._types import StorageTypes
 from crawlee._utils.crypto import crypto_random_object_id
 from crawlee._utils.data_processing import raise_on_duplicate_storage, raise_on_non_existing_storage
@@ -349,11 +350,25 @@ class DatasetClient(BaseDatasetClient):
 
         # Save all the new items to the disk
         for idx, item in data:
-            file_path = os.path.join(entity_directory, f'{idx}.json')
-            f = await asyncio.to_thread(open, file_path, mode='w')
+            await self._write_to_disk_with_at_least_one_encoding(entity_directory, idx, item)
+
+    @staticmethod
+    async def _write_to_disk_with_at_least_one_encoding(directory: str, name: str, data: dict[Any, Any]) -> None:
+        file_path = os.path.join(directory, f'{name}.json')
+        for encoding in service_container.get_configuration().encodings:
             try:
-                s = await json_dumps(item)
+                f = await asyncio.to_thread(open, file_path, mode='w', encoding=encoding)
+            except LookupError:
+                logger.warning(f'Suggested encoding {encoding} is not a valid encoding string.')
+                continue
+
+            try:
+                s = await json_dumps(data)
                 await asyncio.to_thread(f.write, s)
+                logger.info(f'File {file_path} was successfully saved with {encoding} encoding.')
+                break
+            except UnicodeEncodeError:
+                logger.warning(f'Failed to save file {file_path} with encoding {encoding}.')
             finally:
                 await asyncio.to_thread(f.close)
 
