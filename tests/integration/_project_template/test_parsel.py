@@ -10,7 +10,6 @@ import pytest
 from apify_client import ApifyClientAsync
 from cookiecutter.main import cookiecutter
 from typer.testing import CliRunner
-import pexpect
 from crawlee._cli import template_directory, cookiecutter_json, package_manager_choices, crawler_choices, \
     http_client_choices, default_start_url
 from crawlee._utils.crypto import crypto_random_object_id
@@ -58,21 +57,10 @@ async def test_default_template_actor_at_apify(monkeypatch: pytest.MonkeyPatch, 
         # Go to new actor directory created by cli
         with _change_dir(tmp_path / actor_name):
             # Actor init
-            child = pexpect.spawn("apify init")
-            #init_process = subprocess.Popen(['apify', 'init'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)  # noqa: ASYNC220, S603, S607
-            # Should be almost instant, but it is not. Keep it simple, no point in some polling solution.
-            await asyncio.sleep(1)
-
-            child.expect('.+')
-            child.sendline()
-            # Yes to unrecognized Python project. https://github.com/apify/apify-cli/issues/746
-            #init_process.stdin.write(b'\n')
-            await asyncio.sleep(1)
-            child.sendline(actor_name)
-            #init_process.communicate(f'{actor_name}\n'.encode())
+            init_process = subprocess.run(['apify', 'init', '-y', actor_name], capture_output=True, check=True)  # noqa: ASYNC220, S603, S607
 
             # Actor push
-            build_process = subprocess.run(['apify', 'push'], capture_output=True, check=False)  # noqa: ASYNC221, S603, S607
+            build_process = subprocess.run(['apify', 'push'], capture_output=True, check=True)  # noqa: ASYNC221, S603, S607
 
     # Get actor ID from build log
     actor_id_regexp = re.compile(r'https:\/\/console\.apify\.com\/actors\/(.*)#\/builds\/\d*\.\d*\.\d*')
