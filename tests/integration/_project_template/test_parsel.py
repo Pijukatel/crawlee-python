@@ -3,6 +3,7 @@ import contextlib
 import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -61,12 +62,13 @@ async def test_default_template_actor_at_apify(monkeypatch: pytest.MonkeyPatch, 
             #init_process = subprocess.Popen(['apify', 'init'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)  # noqa: ASYNC220, S603, S607
             # Should be almost instant, but it is not. Keep it simple, no point in some polling solution.
             await asyncio.sleep(1)
+
             child.expect('.+')
             child.sendline()
             # Yes to unrecognized Python project. https://github.com/apify/apify-cli/issues/746
             #init_process.stdin.write(b'\n')
             await asyncio.sleep(1)
-            child.sendline(actor_name.encode())
+            child.sendline(actor_name)
             #init_process.communicate(f'{actor_name}\n'.encode())
 
             # Actor push
