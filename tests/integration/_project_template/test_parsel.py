@@ -71,10 +71,14 @@ async def test_default_template_actor_at_apify(tmp_path: Path) -> None:
             # Yes to unrecognized Python project. https://github.com/apify/apify-cli/issues/746
             init_process.stdin.write(b'\n')
             await asyncio.sleep(1)
-            init_process.communicate(f'{actor_name}\n'.encode())
+            stdout, stderr = init_process.communicate(f'{actor_name}\n'.encode())
+            print(stdout)
+            print(stderr)
 
             # Actor push
             build_process = subprocess.run(['apify', 'push'], capture_output=True, check=False)  # noqa: ASYNC221, S603, S607
+            print(build_process.stdout)
+            print(build_process.stderr)
 
     # Get actor ID from build log
     actor_id_regexp = re.compile(r'https:\/\/console\.apify\.com\/actors\/(.*)#\/builds\/\d*\.\d*\.\d*')
