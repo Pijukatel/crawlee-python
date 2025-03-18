@@ -5,12 +5,17 @@ import re
 import subprocess
 from pathlib import Path
 
-import pytest
-import readchar
 from apify_client import ApifyClientAsync
+from cookiecutter.main import cookiecutter
 from typer.testing import CliRunner
 
-import crawlee._cli
+from crawlee._cli import (
+    crawler_choices,
+    default_start_url,
+    http_client_choices,
+    package_manager_choices,
+    template_directory,
+)
 from crawlee._utils.crypto import crypto_random_object_id
 
 runner = CliRunner()
@@ -30,33 +35,37 @@ def _change_dir(new_dir: Path) -> None:
 def generate_unique_actor_name(label: str) -> str:
     """Generates a unique resource name, which will contain the given label."""
     label = label.replace('_', '-')
-    return f'python-crawlee-integration-tests-{label}-generated-{crypto_random_object_id(8)}'
+    return f'python-crawlee-integration-tests-{label}-generated-{crypto_random_object_id(8).lower()}'
 
 
-async def test_default_template_actor_at_apify(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+async def test_default_template_actor_at_apify(tmp_path: Path) -> None:
     with _change_dir(tmp_path):
         # Generate new actor name
         actor_name = generate_unique_actor_name('default')
 
-        # Create project through cli
-        mock_input = iter(
-            [
-                *actor_name,
-                readchar.key.ENTER,
-                readchar.key.ENTER,
-                readchar.key.ENTER,
-                readchar.key.ENTER,
-                readchar.key.ENTER,
-                readchar.key.ENTER,
-            ]
+        # Create project from template
+        cookiecutter(
+            template=str(template_directory),
+            no_input=True,
+            extra_context={
+                'project_name': actor_name,
+                'package_manager': package_manager_choices[0],
+                'crawler_type': crawler_choices[0],
+                'http_client': http_client_choices[0],
+                'enable_apify_integration': True,
+                'start_url': default_start_url,
+            },
         )
-        monkeypatch.setattr(target=readchar, name='readkey', value=lambda: next(mock_input))
-        runner.invoke(crawlee._cli.cli, ['create'])
 
         # Go to new actor directory created by cli
         with _change_dir(tmp_path / actor_name):
             # Actor init
-            init_process = subprocess.Popen(['apify', 'init'], stdin=subprocess.PIPE)  # noqa: ASYNC220, S603, S607
+            init_process = subprocess.Popen(  # noqa: S603, ASYNC220
+                ['apify', 'init'],  # noqa: S607
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
             # Should be almost instant, but it is not. Keep it simple, no point in some polling solution.
             await asyncio.sleep(1)
             # Yes to unrecognized Python project. https://github.com/apify/apify-cli/issues/746
