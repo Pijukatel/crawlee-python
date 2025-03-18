@@ -97,6 +97,7 @@ dev = [
     "filelock~=3.18.0",
     "ipdb~=0.13.0",
     "mypy~=1.15.0",
+    "pexpect",
     "pre-commit~=4.1.0",
     "proxy-py~=2.4.0",
     "pydoc-markdown~=4.8.0",
