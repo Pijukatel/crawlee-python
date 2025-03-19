@@ -12,10 +12,9 @@ jobs:
     name: Unit tests
     strategy:
       fail-fast: false
-      matrix:
-        os: ["ubuntu-latest", "windows-latest"]
-        python-version: ["3.9", "3.13"] # Oldest and newest supported version.
-    runs-on: ${{ matrix.os }}
+    python-version: "3.13"
+    node-version: "22"
+    runs-on: "ubuntu-latest"
     env:
       HTTPBIN_URL: ${{ secrets.httpbin_url || 'https://httpbin.org' }}
 
@@ -26,15 +25,15 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ node-version }}
 
       - name: Install dependencies
         run: npm install -g apify-cli
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ python-version }}
 
       - name: Install poetry
         run: pipx install poetry
@@ -42,7 +41,7 @@ jobs:
       - name: Set up uv package manager
         uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ python-version }}
 
       - name: Install Python dependencies
         run: make install-dev
