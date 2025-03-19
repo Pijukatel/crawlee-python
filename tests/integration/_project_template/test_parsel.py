@@ -1,18 +1,23 @@
-import asyncio
 import contextlib
 import os
 import re
 import subprocess
-import sys
 from pathlib import Path
 
 import pytest
 from apify_client import ApifyClientAsync
 from cookiecutter.main import cookiecutter
 from typer.testing import CliRunner
-from crawlee._cli import template_directory, cookiecutter_json, package_manager_choices, crawler_choices, \
-    http_client_choices, default_start_url
+
+from crawlee._cli import (
+    crawler_choices,
+    default_start_url,
+    http_client_choices,
+    package_manager_choices,
+    template_directory,
+)
 from crawlee._utils.crypto import crypto_random_object_id
+from tests.integration._project_template._utils import patch_crawlee_version_in_uv_project
 
 runner = CliRunner()
 # temp for local tests
@@ -34,7 +39,7 @@ def generate_unique_actor_name(label: str) -> str:
     return f'python-crawlee-integration-tests-{label}-generated-{crypto_random_object_id(8).lower()}'
 
 
-async def test_default_template_actor_at_apify(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+async def test_parsel_uv_template_actor_at_apify(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, crawlee_wheel_path:Path) -> None:
     with _change_dir(tmp_path):
         # Generate new actor name
         actor_name = generate_unique_actor_name('default')
@@ -45,20 +50,25 @@ async def test_default_template_actor_at_apify(monkeypatch: pytest.MonkeyPatch, 
             no_input=True,
             extra_context={
                 'project_name': actor_name,
-                'package_manager': package_manager_choices[0],
-                'crawler_type': crawler_choices[0],
+                'package_manager': package_manager_choices[2],
+                'crawler_type': crawler_choices[1],
                 'http_client': http_client_choices[0],
                 'enable_apify_integration': True,
                 'start_url': default_start_url,
             },
+            accept_hooks=False # Do not install the newly created environment.
         )
 
 
         # Go to new actor directory created by cli
         with _change_dir(tmp_path / actor_name):
+            # Patch the crawlee version in the project
+            Path('_pyproject.toml').rename('pyproject.toml') # Normally done in post gen script that we do not run in test as its main purpose is installation of the environment.
+            patch_crawlee_version_in_uv_project(project_path=tmp_path / actor_name, wheel_path=crawlee_wheel_path)
+
             subprocess.run(['apify', 'login', '-t', os.environ['APIFY_TEST_USER_API_TOKEN']], capture_output=True, check=True)  # noqa: ASYNC221, S603, S607
             # Actor init
-            init_process = subprocess.run(['apify', 'init', '-y', actor_name], capture_output=True, check=True)  # noqa: ASYNC220, S603, S607
+            init_process = subprocess.run(['apify', 'init', '-y', actor_name], capture_output=True, check=True)  # noqa: S603, S607
 
             # Actor push
             build_process = subprocess.run(['apify', 'push'], capture_output=True, check=True)  # noqa: ASYNC221, S603, S607
