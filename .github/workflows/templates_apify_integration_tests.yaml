@@ -12,11 +12,11 @@ jobs:
     name: Unit tests
     strategy:
       fail-fast: false
-    python-version: "3.13"
-    node-version: "22"
+
     runs-on: "ubuntu-latest"
     env:
-      HTTPBIN_URL: ${{ secrets.httpbin_url || 'https://httpbin.org' }}
+      python-version: "3.13"
+      node-version: "22"
 
     steps:
       - name: Checkout repository
