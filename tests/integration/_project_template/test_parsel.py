@@ -17,7 +17,7 @@ from crawlee._cli import (
     template_directory,
 )
 from crawlee._utils.crypto import crypto_random_object_id
-from tests.integration._project_template._utils import patch_crawlee_version_in_uv_project
+from crawlee._utils.test_utils import patch_crawlee_version_in_uv_project
 
 runner = CliRunner()
 # temp for local tests
