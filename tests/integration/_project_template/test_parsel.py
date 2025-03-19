@@ -56,6 +56,7 @@ async def test_default_template_actor_at_apify(monkeypatch: pytest.MonkeyPatch, 
 
         # Go to new actor directory created by cli
         with _change_dir(tmp_path / actor_name):
+            subprocess.run(['apify', 'login', '-t', os.environ['APIFY_TEST_USER_API_TOKEN']], capture_output=True, check=True)  # noqa: ASYNC221, S603, S607
             # Actor init
             init_process = subprocess.run(['apify', 'init', '-y', actor_name], capture_output=True, check=True)  # noqa: ASYNC220, S603, S607
 
