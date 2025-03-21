@@ -2,14 +2,23 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from _pytest.config import Config
 from filelock import FileLock
 
 
-def pytest_configure(config):
-    for marker in ['httpx', 'curl_impersonate', 'playwright', 'parsel', 'beautifulsoup', 'uv', 'poetry']:
-        config.addinivalue_line(
-            'markers', f'{marker}: Integration test parameter marker.'
-        )
+def pytest_configure(config: Config) -> None:
+    for marker in [
+        'httpx',
+        'curl_impersonate',
+        'playwright',
+        'playwright_camoufox',
+        'parsel',
+        'beautifulsoup',
+        'uv',
+        'poetry',
+    ]:
+        config.addinivalue_line('markers', f'{marker}: Integration test parameter marker.')
+
 
 _CRAWLEE_ROOT_PATH = Path(__file__).parent.parent.parent.resolve()
 
