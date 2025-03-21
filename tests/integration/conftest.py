@@ -4,6 +4,13 @@ from pathlib import Path
 import pytest
 from filelock import FileLock
 
+
+def pytest_configure(config):
+    for marker in ['httpx', 'curl-impersonate', 'playwright', 'parsel', 'beautifulsoup', 'uv', 'poetry']:
+        config.addinivalue_line(
+            'markers', f'{marker}: Integration test parameter marker.'
+        )
+
 _CRAWLEE_ROOT_PATH = Path(__file__).parent.parent.parent.resolve()
 
 

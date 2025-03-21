@@ -55,7 +55,7 @@ class Configuration(BaseSettings):
                 'crawlee_disable_browser_sandbox',
             )
         ),
-    ] = False
+    ] = True
     """Disables the sandbox for the browser. Currently primarily for Playwright-based features. This option
     is passed directly to Playwright's `browser_type.launch` method as `chromium_sandbox`. For more details,
     refer to the Playwright documentation:

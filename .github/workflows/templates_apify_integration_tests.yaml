@@ -12,6 +12,7 @@ jobs:
     name: Integration tests
     strategy:
       fail-fast: false
+      max-parallel: 2
       matrix:
         http-client: [ "httpx", "curl-impersonate" ]
         crawler-type: [ "playwright", "parsel", "beautifulsoup" ]
