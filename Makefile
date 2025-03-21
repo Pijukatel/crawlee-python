@@ -1,4 +1,4 @@
-.PHONY: clean install-dev build publish-to-pypi lint type-check unit-tests unit-tests-cov \
+.PHONY: clean install-sync install-dev build publish-to-pypi lint type-check unit-tests unit-tests-cov \
 	integration-tests format check-code build-api-reference run-docs
 
 # This is default for local testing, but GitHub workflows override it to a higher value in CI
@@ -7,8 +7,11 @@ INTEGRATION_TESTS_CONCURRENCY = 1
 clean:
 	rm -rf .mypy_cache .pytest_cache .ruff_cache build dist htmlcov .coverage
 
-install-dev:
+install-sync:
 	uv sync --all-extras
+
+install-dev:
+	make install-sync
 	uv run pre-commit install
 	uv run playwright install
 

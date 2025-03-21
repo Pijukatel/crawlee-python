@@ -19,9 +19,10 @@ from crawlee._utils.test_utils import patch_crawlee_version_in_pyproject_toml_ba
     pytest.param('httpx', marks=pytest.mark.httpx),
     pytest.param('curl-impersonate', marks=pytest.mark.curl_impersonate)])
 @pytest.mark.parametrize('crawler_type', [
-    pytest.param('playwright', marks=pytest.mark.playwright),
     pytest.param('parsel', marks=pytest.mark.parsel),
-    pytest.param('beautifulsoup', marks=pytest.mark.beautifulsoup)])
+    pytest.param('beautifulsoup', marks=pytest.mark.beautifulsoup),
+    pytest.param('playwright', marks=pytest.mark.playwright)
+])
 @pytest.mark.parametrize('package_manager', [
     pytest.param('uv', marks=pytest.mark.uv),
     pytest.param('poetry', marks=pytest.mark.poetry)])

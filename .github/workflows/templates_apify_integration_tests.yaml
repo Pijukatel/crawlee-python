@@ -15,7 +15,7 @@ jobs:
       max-parallel: 2
       matrix:
         http-client: [ "httpx", "curl_impersonate" ]
-        crawler-type: [ "playwright", "parsel", "beautifulsoup" ]
+        crawler-type: [ "parsel", "beautifulsoup", "playwright" ]
         package-manager: [ "uv", "poetry" ]
 
     runs-on: "ubuntu-latest"
@@ -49,7 +49,7 @@ jobs:
           python-version: ${{ env.python-version }}
 
       - name: Install Python dependencies
-        run: make install-dev
+        run: make install-sync
 
       - name: Run Apify integration tests
         run: make integration-tests args="-m ${{ matrix.http-client }} and ${{ matrix.crawler-type }} and ${{ matrix.package-manager }}"
