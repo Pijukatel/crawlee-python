@@ -12,6 +12,10 @@ jobs:
     name: Integration tests
     strategy:
       fail-fast: false
+      matrix:
+        http-client: [ "httpx", "curl-impersonate" ]
+        crawler-type: [ "playwright", "parsel", "beautifulsoup" ]
+        package-manager: [ "uv", "poetry" ]
 
     runs-on: "ubuntu-latest"
     env:
@@ -47,6 +51,6 @@ jobs:
         run: make install-dev
 
       - name: Run Apify integration tests
-        run: make integration-tests
+        run: make integration-tests args="-m ${{ matrix.http-client }} and ${{ matrix.crawler-type }} and ${{ matrix.package-manager }}"
         env:
           APIFY_TEST_USER_API_TOKEN: ${{ secrets.APIFY_TEST_USER_API_TOKEN }}

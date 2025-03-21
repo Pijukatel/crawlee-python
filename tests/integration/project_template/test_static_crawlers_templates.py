@@ -14,14 +14,21 @@ from crawlee._utils.test_utils import patch_crawlee_version_in_pyproject_toml_ba
 # To run these tests locally, make sure you have apify-cli installed and available in the path.
 # https://docs.apify.com/cli/docs/installation
 
-@pytest.mark.parametrize("http_client", ["httpx", "curl-impersonate"])
-@pytest.mark.parametrize("crawler_type", ["parsel", "beautifulsoup"])
-@pytest.mark.parametrize("package_manager", ["uv","poetry"])
-async def test_static_crawler_actor_at_apify(tmp_path: Path,
-                                                      crawlee_wheel_path: Path,
-                                                      package_manager: str,
-                                                      crawler_type: str,
-                                                      http_client: str) -> None:
+
+@pytest.mark.parametrize('http_client', [
+    pytest.param('httpx', marks=pytest.mark.playwright),
+    pytest.param('curl-impersonate', marks=pytest.mark.playwright)])
+@pytest.mark.parametrize('crawler_type', [
+    pytest.param('playwright', marks=pytest.mark.playwright),
+    pytest.param('parsel', marks=pytest.mark.parsel),
+    pytest.param('beautifulsoup', marks=pytest.mark.beautifulsoup)])
+@pytest.mark.parametrize('package_manager', [
+    pytest.param('uv', marks=pytest.mark.uv),
+    pytest.param('poetry', marks=pytest.mark.poetry)])
+async def test_static_crawler_actor_at_apify(
+    tmp_path: Path, crawlee_wheel_path: Path, package_manager: str, crawler_type: str, http_client: str
+) -> None:
+    assert False
     # Generate new actor name
     actor_name = f'crawlee-python-template-integration-test-{crypto_random_object_id(8).lower()}'
 
