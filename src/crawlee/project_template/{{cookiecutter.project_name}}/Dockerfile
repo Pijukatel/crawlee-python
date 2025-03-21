@@ -42,7 +42,6 @@ ENV UV_PROJECT_ENVIRONMENT="/usr/local"
 
 COPY pyproject.toml uv.lock ./
 
-SOME INVALID SYNTAXT
 
 RUN echo "Python version:" \
     && python --version \
