@@ -6,7 +6,7 @@ from filelock import FileLock
 
 
 def pytest_configure(config):
-    for marker in ['httpx', 'curl-impersonate', 'playwright', 'parsel', 'beautifulsoup', 'uv', 'poetry']:
+    for marker in ['httpx', 'curl_impersonate', 'playwright', 'parsel', 'beautifulsoup', 'uv', 'poetry']:
         config.addinivalue_line(
             'markers', f'{marker}: Integration test parameter marker.'
         )

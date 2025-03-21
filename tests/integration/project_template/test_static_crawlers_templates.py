@@ -16,8 +16,8 @@ from crawlee._utils.test_utils import patch_crawlee_version_in_pyproject_toml_ba
 
 
 @pytest.mark.parametrize('http_client', [
-    pytest.param('httpx', marks=pytest.mark.playwright),
-    pytest.param('curl-impersonate', marks=pytest.mark.playwright)])
+    pytest.param('httpx', marks=pytest.mark.httpx),
+    pytest.param('curl-impersonate', marks=pytest.mark.curl_impersonate)])
 @pytest.mark.parametrize('crawler_type', [
     pytest.param('playwright', marks=pytest.mark.playwright),
     pytest.param('parsel', marks=pytest.mark.parsel),

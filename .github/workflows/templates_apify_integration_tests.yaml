@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        http-client: [ "httpx", "curl-impersonate" ]
+        http-client: [ "httpx", "curl_impersonate" ]
         crawler-type: [ "playwright", "parsel", "beautifulsoup" ]
         package-manager: [ "uv", "poetry" ]
 
@@ -52,6 +52,6 @@ jobs:
         run: make install-dev
 
       - name: Run Apify integration tests
-        run: uv run pytest --verbose tests/integration -m "${{ matrix.http-client }} and ${{ matrix.crawler-type }} and ${{ matrix.package-manager }}"
+        run: make integration-tests args="-m ${{ matrix.http-client }} and ${{ matrix.crawler-type }} and ${{ matrix.package-manager }}"
         env:
           APIFY_TEST_USER_API_TOKEN: ${{ secrets.APIFY_TEST_USER_API_TOKEN }}

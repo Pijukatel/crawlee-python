@@ -32,8 +32,8 @@ unit-tests:
 unit-tests-cov:
 	uv run pytest --numprocesses=auto --verbose --cov=src/crawlee --cov-report=html tests/unit
 
-integration-tests:
-	uv run pytest --numprocesses=$(INTEGRATION_TESTS_CONCURRENCY) --verbose tests/integration
+integration-tests $(args):
+	uv run pytest --numprocesses=$(INTEGRATION_TESTS_CONCURRENCY) --verbose tests/integration "$(args)"
 
 format:
 	uv run ruff check --fix
