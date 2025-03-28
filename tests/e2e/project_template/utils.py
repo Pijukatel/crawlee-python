@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def patch_crawlee_version_in_pyproject_toml_based_project(project_path: Path, wheel_path: Path) -> None:
-    """Ensure that the integration test is using current version of the crawlee from the source and not from Pypi."""
+    """Ensure that the test is using current version of the crawlee from the source and not from Pypi."""
     # Copy prepared .whl file
     shutil.copy(wheel_path, project_path)
 
@@ -14,7 +14,7 @@ def patch_crawlee_version_in_pyproject_toml_based_project(project_path: Path, wh
         pyproject = f.read()
         crawlee_extras = re.findall(r'crawlee(\[.*\])', pyproject)[0] or ''
 
-    # Inject crawlee wheel file to the docker image un update project to depend on it."""
+    # Inject crawlee wheel file to the docker image and update project to depend on it."""
     with open(project_path / 'Dockerfile') as f:
         modified_lines = []
         for line in f:

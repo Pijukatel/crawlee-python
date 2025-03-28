@@ -24,7 +24,7 @@ lint:
 	uv run ruff check
 
 type-check:
-	uv --directory tests run mypy ./integration ./unit ../src/crawlee --explicit-package-bases
+	uv run mypy
 
 unit-tests:
 	uv run pytest --numprocesses=auto --verbose --cov=src/crawlee tests/unit
@@ -34,6 +34,9 @@ unit-tests-cov:
 
 integration-tests:
 	uv run pytest --numprocesses=$(INTEGRATION_TESTS_CONCURRENCY) --verbose tests/integration
+
+e2e-templates-tests:
+	uv run pytest --numprocesses=$(INTEGRATION_TESTS_CONCURRENCY) --verbose tests/e2e/project_template
 
 format:
 	uv run ruff check --fix
